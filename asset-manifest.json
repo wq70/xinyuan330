@@ -110,6 +110,7 @@
   "modules/ai/context-and-uploads.js",
   "modules/ai/response-parser.js",
   "modules/ai/spectator-group.js",
+  "modules/ai/mcp-chat-orchestrator.js",
   "modules/ai/trigger-response.js",
   "modules/ai/response-actions.js",
   "modules/ai/inactive-character-actions.js",

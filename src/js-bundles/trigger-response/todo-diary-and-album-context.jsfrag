@@ -182,7 +182,14 @@
         stopBtn.style.display = 'flex';
         stopBtn.classList.add('active');
       }
-      const useStream = !isGemini && !!state.globalSettings.enableApiStream;
+      const latestMcpUserMessage = [...(chat.history || [])].reverse().find(message =>
+        message && message.role === 'user' && !message.isHidden
+      );
+      const availableMcpTools = window.McpChatOrchestrator
+        ? window.McpChatOrchestrator.createCatalog(chat, latestMcpUserMessage)
+        : [];
+      // 工具调用包含结构化增量；当前聊天流解析器只处理文本，所以 MCP 回合使用非流式请求。
+      const useStream = !isGemini && !!state.globalSettings.enableApiStream && availableMcpTools.length === 0;
 
       // 记录API请求数据
       const requestData = {
@@ -267,73 +274,142 @@
         return;
       }
 
-      try {
-        let reqBody = {
-            model: model,
-            messages: [{
-                role: 'system',
-                content: systemPrompt
-            }, ...messagesPayload],
-            temperature: state.globalSettings.apiTemperature || 0.8,
-            stream: useStream,
-            ...(state.globalSettings.apiTopPEnabled && state.globalSettings.apiTopP !== undefined ? { top_p: state.globalSettings.apiTopP } : {}),
-            ...(state.globalSettings.apiMaxTokensEnabled && state.globalSettings.apiMaxTokens !== undefined ? { max_tokens: state.globalSettings.apiMaxTokens } : {}),
-            ...(state.globalSettings.apiPresencePenaltyEnabled && state.globalSettings.apiPresencePenalty !== undefined ? { presence_penalty: state.globalSettings.apiPresencePenalty } : {}),
-            ...(state.globalSettings.apiFrequencyPenaltyEnabled && state.globalSettings.apiFrequencyPenalty !== undefined ? { frequency_penalty: state.globalSettings.apiFrequencyPenalty } : {})
-        };
-        response = isGemini ?
-          await fetch(geminiConfig.url, {
-            ...geminiConfig.data,
-            signal: currentApiController.signal
-          }) :
-          await fetch(`${proxyUrl}/v1/chat/completions`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(reqBody),
-            signal: currentApiController.signal
-          });
-      } catch (networkError) {
-        if (networkError.name === 'AbortError') {
-          throw networkError;
-        }
-        throw new Error(`网络请求失败: ${networkError.message}`);
-      }
-
-      if (!response.ok) {
-        let errorMsg = `API 返回错误: ${response.status} ${response.statusText}`;
+      async function throwApiError(apiResponse) {
+        let errorMsg = `API 返回错误: ${apiResponse.status} ${apiResponse.statusText}`;
         try {
-          const errorData = await response.json();
-          if (errorData.error && errorData.error.message) {
-            errorMsg += ` - ${errorData.error.message}`;
-          } else {
-            errorMsg += ` - ${JSON.stringify(errorData)}`;
-          }
+          const errorData = await apiResponse.json();
+          errorMsg += ` - ${errorData?.error?.message || errorData?.message || JSON.stringify(errorData)}`;
         } catch (jsonError) {
-          errorMsg += ` - 响应内容: ${await response.text()}`;
+          errorMsg += ` - 响应内容: ${await apiResponse.text()}`;
         }
         throw new Error(errorMsg);
       }
 
-      if (replyGuardianTaskId && window.ReplyTaskStore) {
-        window.ReplyTaskStore.setStage(replyGuardianTaskId, 'receiving', '正在接收回复').catch(() => {});
+      async function sendToolAwareRequest(input) {
+        let apiResponse;
+        try {
+          if (isGemini) {
+            const request = toGeminiRequestData(model, apiKey, systemPrompt, input.messages, {
+              tools: input.tools,
+              forceFinal: input.forceFinal
+            });
+            apiResponse = await fetch(request.url, {
+              ...request.data,
+              signal: input.signal
+            });
+          } else {
+            const reqBody = {
+              model,
+              messages: [{ role: 'system', content: systemPrompt }, ...input.messages],
+              temperature: state.globalSettings.apiTemperature || 0.8,
+              stream: false,
+              ...(input.tools.length ? { tools: input.tools, tool_choice: input.forceFinal ? 'none' : 'auto' } : {}),
+              ...(state.globalSettings.apiTopPEnabled && state.globalSettings.apiTopP !== undefined ? { top_p: state.globalSettings.apiTopP } : {}),
+              ...(state.globalSettings.apiMaxTokensEnabled && state.globalSettings.apiMaxTokens !== undefined ? { max_tokens: state.globalSettings.apiMaxTokens } : {}),
+              ...(state.globalSettings.apiPresencePenaltyEnabled && state.globalSettings.apiPresencePenalty !== undefined ? { presence_penalty: state.globalSettings.apiPresencePenalty } : {}),
+              ...(state.globalSettings.apiFrequencyPenaltyEnabled && state.globalSettings.apiFrequencyPenalty !== undefined ? { frequency_penalty: state.globalSettings.apiFrequencyPenalty } : {})
+            };
+            apiResponse = await fetch(`${proxyUrl}/v1/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+              },
+              body: JSON.stringify(reqBody),
+              signal: input.signal
+            });
+          }
+        } catch (networkError) {
+          if (networkError.name === 'AbortError') throw networkError;
+          throw new Error(`网络请求失败: ${networkError.message}`);
+        }
+        response = apiResponse;
+        if (!apiResponse.ok) await throwApiError(apiResponse);
+        const data = await apiResponse.json();
+        responsePayload = data;
+
+        if (isGemini) {
+          const parts = data?.candidates?.[0]?.content?.parts || [];
+          const toolCalls = parts
+            .filter(part => part && part.functionCall)
+            .map((part, index) => ({
+              id: `gemini_call_${Date.now()}_${index}`,
+              name: part.functionCall.name,
+              arguments: part.functionCall.args || {}
+            }));
+          return {
+            text: parts.map(part => part && part.text || '').join(''),
+            toolCalls
+          };
+        }
+
+        const message = data?.choices?.[0]?.message || {};
+        return {
+          text: typeof message.content === 'string' ? message.content : '',
+          assistantMessage: message,
+          toolCalls: (message.tool_calls || []).map(call => ({
+            id: call.id,
+            name: call.function && call.function.name,
+            arguments: call.function && call.function.arguments
+          }))
+        };
       }
 
-      if (useStream) {
-        aiResponseContent = await readOpenAiStreamResponse(response, streamedText => {
-          updateTemporaryStreamMessage(streamedText);
+      if (availableMcpTools.length && window.McpChatOrchestrator) {
+        aiResponseContent = await window.McpChatOrchestrator.run({
+          chat,
+          messages: messagesPayload,
+          signal: currentApiController.signal,
+          send: sendToolAwareRequest
         });
-        responsePayload = {
-          stream: true,
-          content: aiResponseContent
-        };
-        // 临时消息已关闭，不需要再强行覆盖
       } else {
-        const data = await response.json();
-        aiResponseContent = getGeminiResponseText(data);
-        responsePayload = data;
+        try {
+          let reqBody = {
+              model: model,
+              messages: [{
+                  role: 'system',
+                  content: systemPrompt
+              }, ...messagesPayload],
+              temperature: state.globalSettings.apiTemperature || 0.8,
+              stream: useStream,
+              ...(state.globalSettings.apiTopPEnabled && state.globalSettings.apiTopP !== undefined ? { top_p: state.globalSettings.apiTopP } : {}),
+              ...(state.globalSettings.apiMaxTokensEnabled && state.globalSettings.apiMaxTokens !== undefined ? { max_tokens: state.globalSettings.apiMaxTokens } : {}),
+              ...(state.globalSettings.apiPresencePenaltyEnabled && state.globalSettings.apiPresencePenalty !== undefined ? { presence_penalty: state.globalSettings.apiPresencePenalty } : {}),
+              ...(state.globalSettings.apiFrequencyPenaltyEnabled && state.globalSettings.apiFrequencyPenalty !== undefined ? { frequency_penalty: state.globalSettings.apiFrequencyPenalty } : {})
+          };
+          response = isGemini ?
+            await fetch(geminiConfig.url, {
+              ...geminiConfig.data,
+              signal: currentApiController.signal
+            }) :
+            await fetch(`${proxyUrl}/v1/chat/completions`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
+              },
+              body: JSON.stringify(reqBody),
+              signal: currentApiController.signal
+            });
+        } catch (networkError) {
+          if (networkError.name === 'AbortError') throw networkError;
+          throw new Error(`网络请求失败: ${networkError.message}`);
+        }
+        if (!response.ok) await throwApiError(response);
+        if (useStream) {
+          aiResponseContent = await readOpenAiStreamResponse(response, streamedText => {
+            updateTemporaryStreamMessage(streamedText);
+          });
+          responsePayload = { stream: true, content: aiResponseContent };
+        } else {
+          const data = await response.json();
+          aiResponseContent = getGeminiResponseText(data);
+          responsePayload = data;
+        }
+      }
+
+      if (replyGuardianTaskId && window.ReplyTaskStore) {
+        window.ReplyTaskStore.setStage(replyGuardianTaskId, 'receiving', '正在接收回复').catch(() => {});
       }
 
       if (replyGuardianTaskId && window.ReplyTaskStore) {

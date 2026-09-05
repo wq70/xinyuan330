@@ -109,7 +109,8 @@
     return context;
   }
 
-  function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision) {
+  function toGeminiRequestData(model, apiKey, systemInstruction, messagesForDecision, options) {
+    options = options || {};
     const apiTemperature = state.globalSettings.apiTemperature || 0.8;
     const apiTopP = state.globalSettings.apiTopP !== undefined ? state.globalSettings.apiTopP : 1.0;
     const apiPresencePenalty = state.globalSettings.apiPresencePenalty !== undefined ? state.globalSettings.apiPresencePenalty : 0.0;
@@ -137,6 +138,37 @@
     ...messagesForDecision.map((item) => {
       const parts = [];
 
+      if (item.role === 'tool') {
+        let response;
+        try { response = JSON.parse(item.content || '{}'); }
+        catch (error) { response = { result: String(item.content || '') }; }
+        return {
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: item.name,
+              response
+            }
+          }]
+        };
+      }
+
+      if (item.role === 'assistant' && Array.isArray(item.tool_calls)) {
+        if (item.content) parts.push({ text: String(item.content) });
+        item.tool_calls.forEach(call => {
+          let args = {};
+          try { args = JSON.parse(call.function && call.function.arguments || '{}'); }
+          catch (error) { /* Invalid arguments are handled by the orchestrator. */ }
+          parts.push({
+            functionCall: {
+              name: call.function && call.function.name,
+              args
+            }
+          });
+        });
+        return { role: 'model', parts };
+      }
+
       if (Array.isArray(item.content)) {
         item.content.forEach(part => {
           if (part.type === 'text') {
@@ -160,9 +192,7 @@
         });
       } else {
 
-        parts.push({
-          text: String(item.content)
-        });
+        parts.push({ text: String(item.content == null ? '' : item.content) });
       }
       return {
         role: roleType[item.role],
@@ -181,6 +211,20 @@
         },
         body: JSON.stringify({
           contents: contents,
+          ...(Array.isArray(options.tools) && options.tools.length ? {
+            tools: [{
+              functionDeclarations: options.tools.map(tool => ({
+                name: tool.function.name,
+                description: tool.function.description,
+                parameters: tool.function.parameters
+              }))
+            }],
+            toolConfig: {
+              functionCallingConfig: {
+                mode: options.forceFinal ? 'NONE' : 'AUTO'
+              }
+            }
+          } : {}),
           generationConfig: {
             temperature: apiTemperature,
             topP: apiTopP,

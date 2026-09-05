@@ -381,6 +381,15 @@
       if (!state.activeChatId) return;
       const chat = state.chats[state.activeChatId];
       const isGroup = chat.isGroup;
+      const mcpEditor = document.getElementById('chat-mcp-permission-editor');
+      const groupMcpNote = document.getElementById('group-mcp-permission-note');
+      if (mcpEditor && groupMcpNote) {
+        mcpEditor.style.display = isGroup ? 'none' : 'block';
+        groupMcpNote.style.display = isGroup ? 'block' : 'none';
+        if (!isGroup && window.mcpManager && typeof window.mcpManager.renderPermissionEditor === 'function') {
+          window.mcpManager.renderPermissionEditor(mcpEditor, chat);
+        }
+      }
 
       const weatherSection = document.getElementById('weather-settings-section');
       if (isGroup) {

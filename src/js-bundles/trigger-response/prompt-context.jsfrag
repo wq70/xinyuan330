@@ -516,7 +516,11 @@
               linkedMemoryContext += `\n## --- 来自${prefix}“${linkedChat.name}”的参考记忆${timeAgo} ---\n`;
 
               const recentHistory = linkedChat.history.slice(-memoryCount);
-              const filteredHistory = recentHistory.filter(msg => !String(msg.content).includes('已被用户删除') && msg.type !== 'thought_chain_block');
+              const filteredHistory = recentHistory.filter(msg =>
+                !String(msg.content).includes('已被用户删除') &&
+                msg.type !== 'thought_chain_block' &&
+                msg.type !== 'mcp_activity'
+              );
 
               if (filteredHistory.length > 0) {
                 filteredHistory.forEach(msg => {

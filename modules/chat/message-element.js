@@ -48,7 +48,7 @@
       return wrapper;
     }
 
-    if (msg.isHidden && !chat.settings.showHiddenMessages) {
+    if (msg.isHidden && msg.type !== 'mcp_activity' && !chat.settings.showHiddenMessages) {
       return null;
     }
     if (msg.type === 'narration') {

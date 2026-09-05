@@ -673,7 +673,9 @@ ${linkedContents}
 
 
       const maxMemory = parseInt(chat.settings.maxMemory) || 10;
-      const historySlice = chat.history.filter(m => !m.isExcluded && m.type !== 'thought_chain_block').slice(-maxMemory);
+      const historySlice = chat.history.filter(m =>
+        !m.isExcluded && m.type !== 'thought_chain_block' && m.type !== 'mcp_activity'
+      ).slice(-maxMemory);
       const filteredHistory = await filterHistoryWithDoNotSendRules(historySlice, chatId);
       let sharedContext = '';
       const lastAiTurnIndex = chat.history.findLastIndex(msg => msg.role === 'assistant');
@@ -733,7 +735,11 @@ ${linkedContents}
             linkedMemoryContext += `\n## --- 来自${prefix}“${linkedChat.name}”的参考记忆${timeAgo} ---\n`;
 
             const recentHistory = linkedChat.history.slice(-memoryCount);
-            const filteredHistory = recentHistory.filter(msg => !String(msg.content).includes('已被用户删除') && msg.type !== 'thought_chain_block');
+            const filteredHistory = recentHistory.filter(msg =>
+              !String(msg.content).includes('已被用户删除') &&
+              msg.type !== 'thought_chain_block' &&
+              msg.type !== 'mcp_activity'
+            );
 
             if (filteredHistory.length > 0) {
               filteredHistory.forEach(msg => {
@@ -805,7 +811,11 @@ ${linkedContents}
               const timeAgo = item.latestTimestamp > 0 ? ` (最后互动于 ${formatTimeAgo(item.latestTimestamp)})` : '';
               linkedMemoryContext += `\n## --- 来自${prefix}“${linkedChat.name}”的参考记忆${timeAgo} ---\n`;
               const recentHistory = linkedChat.history.slice(-memoryCount);
-              const filteredHistory = recentHistory.filter(msg => !String(msg.content).includes('已被用户删除') && msg.type !== 'thought_chain_block');
+              const filteredHistory = recentHistory.filter(msg =>
+                !String(msg.content).includes('已被用户删除') &&
+                msg.type !== 'thought_chain_block' &&
+                msg.type !== 'mcp_activity'
+              );
               if (filteredHistory.length > 0) {
                 filteredHistory.forEach(msg => {
                   const sender = msg.role === 'user' ? (linkedChat.settings.myNickname || '我') : (msg.senderName || linkedChat.name);
