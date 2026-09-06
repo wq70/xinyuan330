@@ -182,8 +182,7 @@
                z-index: 15;
                flex-shrink: 0;
                padding: 15px 20px;
-               padding-top: calc(15px + constant(safe-area-inset-top));
-               padding-top: calc(15px + env(safe-area-inset-top));
+               padding-top: 45px;
                background-color: rgba(247, 247, 247, 0.8);
                backdrop-filter: blur(10px);
                -webkit-backdrop-filter: blur(10px);
@@ -193,18 +192,6 @@
                align-items: center;
                font-size: 18px;
                font-weight: 600;
-           }
-
-           #phone-screen.status-bar-visible .header {
-               padding-top: calc(45px + constant(safe-area-inset-top));
-               padding-top: calc(45px + env(safe-area-inset-top));
-           }
-
-           #phone-screen.status-bar-visible #status-bar {
-               height: calc(40px + constant(safe-area-inset-top));
-               height: calc(40px + env(safe-area-inset-top));
-               padding-top: constant(safe-area-inset-top);
-               padding-top: env(safe-area-inset-top);
            }
 
            .header .header-actions {
