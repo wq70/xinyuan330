@@ -5,7 +5,9 @@
            .toast-container {
                position: fixed;
                top: 12px;
-               /* 顶部留出状态栏呼吸感 */
+               top: calc(12px + constant(safe-area-inset-top));
+               top: calc(12px + env(safe-area-inset-top));
+               /* 顶部留出状态栏呼吸感 + iOS刘海安全区 */
                left: 50%;
                transform: translateX(-50%);
                z-index: 9999;

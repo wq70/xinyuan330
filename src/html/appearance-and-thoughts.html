@@ -442,7 +442,7 @@
     <style>
       #thought-chain-screen { background: #fff; color: #303136; }
       #thought-chain-screen .thought-chain-scroll { background: #fff; padding: 22px 16px 44px; }
-      .tc-page-header { display:flex; flex-direction:column; gap:12px; padding:16px 20px 18px; background:#fff; border-bottom:1px solid #dedfe3; }
+      .tc-page-header { display:flex; flex-direction:column; gap:12px; padding:45px 20px 18px; background:#fff; border-bottom:1px solid #dedfe3; box-sizing:border-box; }
       .tc-header-nav { display:flex; justify-content:space-between; align-items:center; width:100%; }
       .tc-header-content { display:flex; flex-direction:column; gap:3px; }
       .tc-page-header h1 { margin:3px 0 2px; font:600 clamp(24px,6.5vw,32px)/1.15 Georgia,serif; letter-spacing:-.03em; }
@@ -480,7 +480,7 @@
       .tc-add-entry { display:flex; align-items:center; gap:12px; width:calc(100% - 5px); margin:4px 0 0 5px; padding:15px 16px; border:1px dashed #bcb9c1; background:transparent; color:#66636d; text-align:left; cursor:pointer; }.tc-add-entry > span:first-child { color:#928a99; font-size:22px; line-height:1; }.tc-add-entry strong,.tc-add-entry small { display:block; }.tc-add-entry strong { font-size:13px; font-weight:600; }.tc-add-entry small { margin-top:4px; color:#9998a0; font-size:10px; }
       #thought-chain-screen .thought-chain-compatibility-heading,#thought-chain-screen .thought-chain-advanced-settings,#thought-chain-screen .thought-chain-settings-card > .settings-item:not(.thought-chain-compatibility-heading) { font-size:12px; }
       #thought-chain-screen .thought-chain-settings-card { margin:0; border:0; box-shadow:none; }
-      @media (max-width:430px) { .tc-page-header { padding:14px 14px 16px; }.thought-chain-scroll { padding-left:10px !important; padding-right:10px !important; }.tc-control-sheet { margin-bottom:14px; }.tc-module { grid-template-columns:29px 1fr auto; gap:8px; padding-right:8px; }.is-organizing .tc-module { grid-template-columns:18px 17px 1fr auto; }.tc-module-topline h3 { font-size:15px; }.tc-module-state { margin-left:0; }.tc-module-summary { font-size:11px; }.tc-preset-actions-row > button { padding:7px 10px; } }
+      @media (max-width:430px) { .tc-page-header { padding:45px 14px 16px; }.thought-chain-scroll { padding-left:10px !important; padding-right:10px !important; }.tc-control-sheet { margin-bottom:14px; }.tc-module { grid-template-columns:29px 1fr auto; gap:8px; padding-right:8px; }.is-organizing .tc-module { grid-template-columns:18px 17px 1fr auto; }.tc-module-topline h3 { font-size:15px; }.tc-module-state { margin-left:0; }.tc-module-summary { font-size:11px; }.tc-preset-actions-row > button { padding:7px 10px; } }
       #thought-chain-editor-modal .modal-content { max-width:520px; height:min(88%, 720px) !important; }
       #thought-chain-editor-modal .modal-body { overflow-y:auto; padding:18px; }
       #thought-chain-editor-modal textarea#tc-content-input { min-height:190px; resize:vertical; line-height:1.65; }
