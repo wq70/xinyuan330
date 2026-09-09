@@ -65,9 +65,8 @@
     }
     if (screenId === 'api-settings-screen') {
       window.renderApiSettingsProxy();
-      if (state.globalSettings.cleanApiSettings && typeof window.openCleanApiSettings === 'function') {
-        // 整洁模式：先让原有回显完成，再构建Tab界面
-        setTimeout(() => window.openCleanApiSettings(), 50);
+      if (typeof window.applyCleanApiSettingsLayout === 'function') {
+        window.applyCleanApiSettingsLayout(state.globalSettings.cleanApiSettings);
       }
     }
     if (screenId === 'wallpaper-screen') window.renderWallpaperScreenProxy();

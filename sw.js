@@ -2,8 +2,9 @@
 // 【智能缓存策略】- 根据资源类型使用不同的缓存策略，优化加载速度
 
 // 缓存版本号（智能缓存策略）
-const CACHE_VERSION = 'v0.0.36-pwa-install-2';
+const CACHE_VERSION = 'v0.0.37-desktop-cleanup';
 const CACHE_NAME = `ephone-cache-${CACHE_VERSION}`;
+const DESKTOP_FEATURE_CACHE_TO_REMOVE = 'ephone-cache-v0.0.36-pwa-install-2';
 
 // 安装阶段只缓存最小启动外壳。其余资源由 fetch 事件按需缓存，
 // 避免移动端因为某一个资源请求挂起而一直无法完成 PWA 安装。
@@ -58,7 +59,8 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   console.log('[SW] 正在激活 Service Worker...');
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(async cacheNames => {
+      const needsDesktopCleanupReload = cacheNames.includes(DESKTOP_FEATURE_CACHE_TO_REMOVE);
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
@@ -66,10 +68,15 @@ self.addEventListener('activate', event => {
             return caches.delete(cacheName);
           }
         })
-      );
-    }).then(() => {
+      ).then(async () => {
         console.log('[SW] Service Worker 已激活！使用智能缓存策略。');
-        return self.clients.claim();
+        await self.clients.claim();
+        if (!needsDesktopCleanupReload) return;
+        const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+        await Promise.all(clients.map(client => client.navigate(client.url).catch(error => {
+          console.warn('[SW] 桌面残留清理后自动刷新失败:', error);
+        })));
+      });
     })
   );
 });

@@ -1,5 +1,21 @@
 // ========== API 预设管理 ==========
 
+  // renderApiSettings 会在每次进入页面和切换预设时执行。用 WeakMap 保证
+  // 同一控件的同类业务事件只绑定一次，避免连续使用后重复触发。
+  const apiSettingsBoundEvents = new WeakMap();
+
+  function bindApiSettingsListener(element, type, listener) {
+    if (!element) return;
+    let boundTypes = apiSettingsBoundEvents.get(element);
+    if (!boundTypes) {
+      boundTypes = new Set();
+      apiSettingsBoundEvents.set(element, boundTypes);
+    }
+    if (boundTypes.has(type)) return;
+    boundTypes.add(type);
+    element.addEventListener(type, listener);
+  }
+
   async function loadApiPresetsDropdown(forceSelectedId = null) {
     const selectEl = document.getElementById('api-preset-select');
     selectEl.innerHTML = '<option value="current">当前配置 (未保存)</option>';
@@ -264,18 +280,18 @@
     customThoughtsSwitch.checked = state.globalSettings.customThoughtsPromptEnabled || false;
     customThoughtsContainer.style.display = customThoughtsSwitch.checked ? 'block' : 'none';
     customThoughtsTextarea.value = state.globalSettings.customThoughtsPrompt || getDefaultThoughtsPrompt();
-    customThoughtsSwitch.addEventListener('change', function() {
+    bindApiSettingsListener(customThoughtsSwitch, 'change', function() {
       customThoughtsContainer.style.display = this.checked ? 'block' : 'none';
       if (this.checked && !customThoughtsTextarea.value.trim()) {
         customThoughtsTextarea.value = getDefaultThoughtsPrompt();
       }
     });
-    document.getElementById('reset-thoughts-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-thoughts-prompt-btn'), 'click', function() {
       customThoughtsTextarea.value = getDefaultThoughtsPrompt();
     });
 
     // 心声提示词 - 导出
-    document.getElementById('export-thoughts-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('export-thoughts-prompt-btn'), 'click', function() {
       const content = customThoughtsTextarea.value || '';
       const data = JSON.stringify({ type: 'thoughts_prompt', content: content }, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
@@ -288,10 +304,10 @@
     });
 
     // 心声提示词 - 导入
-    document.getElementById('import-thoughts-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('import-thoughts-prompt-btn'), 'click', function() {
       document.getElementById('import-thoughts-prompt-file').click();
     });
-    document.getElementById('import-thoughts-prompt-file').addEventListener('change', function(e) {
+    bindApiSettingsListener(document.getElementById('import-thoughts-prompt-file'), 'change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -326,7 +342,7 @@
     customThoughtsHTMLTextarea.value = state.globalSettings.customThoughtsHTML || getDefaultThoughtsHTML();
     customThoughtsCSSTextarea.value = state.globalSettings.customThoughtsCSS || getDefaultThoughtsCSS();
     
-    customThoughtsUISwitch.addEventListener('change', function() {
+    bindApiSettingsListener(customThoughtsUISwitch, 'change', function() {
       customThoughtsUIContainer.style.display = this.checked ? 'block' : 'none';
       if (this.checked) {
         if (!customThoughtsHTMLTextarea.value.trim()) {
@@ -338,14 +354,14 @@
       }
     });
 
-    document.getElementById('reset-thoughts-ui-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-thoughts-ui-btn'), 'click', function() {
       customThoughtsHTMLTextarea.value = getDefaultThoughtsHTML();
       customThoughtsCSSTextarea.value = getDefaultThoughtsCSS();
       showToast('已恢复默认外观代码');
     });
 
     // 心声外观 - 导出
-    document.getElementById('export-thoughts-ui-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('export-thoughts-ui-btn'), 'click', function() {
       const htmlContent = customThoughtsHTMLTextarea.value || '';
       const cssContent = customThoughtsCSSTextarea.value || '';
       const data = JSON.stringify({ type: 'thoughts_ui', html: htmlContent, css: cssContent }, null, 2);
@@ -359,11 +375,11 @@
     });
 
     // 心声外观 - 导入
-    document.getElementById('import-thoughts-ui-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('import-thoughts-ui-btn'), 'click', function() {
       document.getElementById('import-thoughts-ui-file').click();
     });
     
-    document.getElementById('import-thoughts-ui-file').addEventListener('change', function(e) {
+    bindApiSettingsListener(document.getElementById('import-thoughts-ui-file'), 'change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -392,18 +408,18 @@
     customSummarySwitch.checked = state.globalSettings.customSummaryPromptEnabled || false;
     customSummaryContainer.style.display = customSummarySwitch.checked ? 'block' : 'none';
     customSummaryTextarea.value = state.globalSettings.customSummaryPrompt || getDefaultSummaryPrompt();
-    customSummarySwitch.addEventListener('change', function() {
+    bindApiSettingsListener(customSummarySwitch, 'change', function() {
       customSummaryContainer.style.display = this.checked ? 'block' : 'none';
       if (this.checked && !customSummaryTextarea.value.trim()) {
         customSummaryTextarea.value = getDefaultSummaryPrompt();
       }
     });
-    document.getElementById('reset-summary-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-summary-prompt-btn'), 'click', function() {
       customSummaryTextarea.value = getDefaultSummaryPrompt();
     });
 
     // 结构化总结提示词 - 导出
-    document.getElementById('export-summary-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('export-summary-prompt-btn'), 'click', function() {
       const content = customSummaryTextarea.value || '';
       const data = JSON.stringify({ type: 'summary_prompt', content: content }, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
@@ -416,10 +432,10 @@
     });
 
     // 结构化总结提示词 - 导入
-    document.getElementById('import-summary-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('import-summary-prompt-btn'), 'click', function() {
       document.getElementById('import-summary-prompt-file').click();
     });
-    document.getElementById('import-summary-prompt-file').addEventListener('change', function(e) {
+    bindApiSettingsListener(document.getElementById('import-summary-prompt-file'), 'change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -458,7 +474,7 @@
     customChatPromptOfflineTextarea.value = state.globalSettings.customChatPromptOffline || getDefaultChatPrompt('offline');
     customChatPromptGroupOfflineTextarea.value = state.globalSettings.customChatPromptGroupOffline || getDefaultChatPrompt('group_offline');
     
-    customChatPromptSwitch.addEventListener('change', function() {
+    bindApiSettingsListener(customChatPromptSwitch, 'change', function() {
       customChatPromptContainer.style.display = this.checked ? 'block' : 'none';
       // 开启时，如果文本框为空，填充默认提示词
       if (this.checked) {
@@ -478,32 +494,32 @@
     });
     
     // 单聊提示词 - 恢复默认
-    document.getElementById('reset-chat-prompt-single-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-chat-prompt-single-btn'), 'click', function() {
       customChatPromptSingleTextarea.value = getDefaultChatPrompt('single');
       showToast('已恢复单聊默认提示词');
     });
     
     // 群聊提示词 - 恢复默认
-    document.getElementById('reset-chat-prompt-group-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-chat-prompt-group-btn'), 'click', function() {
       customChatPromptGroupTextarea.value = getDefaultChatPrompt('group');
       showToast('已恢复群聊默认提示词');
     });
     
     // 线下模式提示词 - 恢复默认
-    document.getElementById('reset-chat-prompt-offline-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-chat-prompt-offline-btn'), 'click', function() {
       customChatPromptOfflineTextarea.value = getDefaultChatPrompt('offline');
       showToast('已恢复线下模式默认提示词');
       showToast('已清空线下模式提示词，将使用默认提示词');
     });
     
     // 群聊线下模式提示词 - 恢复默认
-    document.getElementById('reset-chat-prompt-group-offline-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('reset-chat-prompt-group-offline-btn'), 'click', function() {
       customChatPromptGroupOfflineTextarea.value = getDefaultChatPrompt('group_offline');
       showToast('已恢复群聊线下模式默认提示词');
     });
     
     // 聊天提示词 - 导出
-    document.getElementById('export-chat-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('export-chat-prompt-btn'), 'click', function() {
       const data = {
         type: 'chat_prompts',
         single: customChatPromptSingleTextarea.value || '',
@@ -522,10 +538,10 @@
     });
     
     // 聊天提示词 - 导入
-    document.getElementById('import-chat-prompt-btn').addEventListener('click', function() {
+    bindApiSettingsListener(document.getElementById('import-chat-prompt-btn'), 'click', function() {
       document.getElementById('import-chat-prompt-file').click();
     });
-    document.getElementById('import-chat-prompt-file').addEventListener('change', function(e) {
+    bindApiSettingsListener(document.getElementById('import-chat-prompt-file'), 'change', function(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
@@ -554,7 +570,7 @@
     const chatPromptContents = document.querySelectorAll('.custom-chat-prompt-tab-content');
     
     chatPromptTabs.forEach(tab => {
-      tab.addEventListener('click', function() {
+      bindApiSettingsListener(tab, 'click', function() {
         const targetTab = this.getAttribute('data-tab');
         
         // 更新标签样式
@@ -834,7 +850,7 @@
         ghProxyUrlInput.value = state.apiConfig.githubProxyUrl || '';
 
         // 绑定切换事件，控制输入框显示
-        ghProxySwitch.addEventListener('change', (e) => {
+        bindApiSettingsListener(ghProxySwitch, 'change', (e) => {
           ghProxyInputDiv.style.display = e.target.checked ? 'block' : 'none';
         });
       }

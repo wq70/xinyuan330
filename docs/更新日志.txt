@@ -206,3 +206,6 @@ GPT 生图功能：
 致谢与第三方引用：
 角色手机与“我的手机”播放器中的本地歌曲 Blob URL 回收逻辑，参考并改写自穗穗 / 笨蛋小姐的 https://github.com/yxlforever/YYY/commit/ece2d6bec633ced55c89af3871f96c97ebf3aa7e 。感谢作者的实现与公开分享；具体引用范围和维护方式见《致谢与第三方引用说明》。
 
+
+1.修复整洁API和美化卡顿的问题
+2.

@@ -8,7 +8,7 @@
       <div class="settings-container ios-scroll-container">
         
         <!-- 语言设置 -->
-        <div class="settings-section">
+        <div class="settings-section" data-api-category="system">
             <div class="settings-item">
                 <label for="language-select" data-lang-key="languageLabel">语言</label>
                 <div class="settings-right">
@@ -21,7 +21,7 @@
         </div>
 
         <!-- 调试控制台 -->
-        <div class="settings-header">调试工具</div>
+        <div class="settings-header" data-api-category="system">调试工具</div>
         <div class="settings-section">
             <div class="settings-item">
                 <label>移动端控制台</label>
@@ -42,7 +42,7 @@
         </div>
 
         <!-- 悬浮球快捷工具 -->
-        <div class="settings-header">悬浮球快捷工具</div>
+        <div class="settings-header" data-api-category="system">悬浮球快捷工具</div>
         <div class="settings-section">
             <div class="settings-item">
                 <label>启用悬浮球</label>
@@ -57,7 +57,7 @@
         </div>
 
         <!-- API 预设 -->
-        <div class="settings-header" data-lang-key="apiPresetManagement">配置预设</div>
+        <div class="settings-header" data-api-category="api" data-lang-key="apiPresetManagement">配置预设</div>
         <div class="settings-section">
             <div class="settings-item">
                  <!-- 下拉框容器：flex-grow 占满左侧空间，内部左对齐 -->
@@ -76,7 +76,7 @@
         </div>
 
         <!-- 主 API 设置 -->
-        <div class="settings-header" data-lang-key="apiPrimarySettings">主 API (对话)</div>
+        <div class="settings-header" data-api-category="api" data-lang-key="apiPrimarySettings">主 API (对话)</div>
         <div class="settings-section">
             <!-- 1. 提示条 (还原截图效果) -->
             <div class="settings-tip-wrapper">
@@ -114,7 +114,7 @@
         </div>
 
         <!-- 参数设置 -->
-        <div class="settings-header">参数设置</div>
+        <div class="settings-header" data-api-category="api">参数设置</div>
         <div class="settings-section">
              <div class="settings-item" style="display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; width: 100% !important; box-sizing: border-box !important;">
                 <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important;">
@@ -139,7 +139,7 @@
         </div>
 
         <!-- 高级参数设置 -->
-        <div class="settings-header">高级参数</div>
+        <div class="settings-header" data-api-category="api">高级参数</div>
         <div class="settings-section">
              <div class="settings-item" style="display: flex !important; flex-direction: column !important; align-items: stretch !important; gap: 12px !important; width: 100% !important; box-sizing: border-box !important;">
                 <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; width: 100% !important;">
@@ -216,7 +216,7 @@
         </div>
 
         <!-- 副 API 设置 -->
-        <div class="settings-header" data-lang-key="apiSecondarySettings">副 API (长记忆总结)</div>
+        <div class="settings-header" data-api-category="ai" data-lang-key="apiSecondarySettings">副 API (长记忆总结)</div>
         <div class="settings-section">
             <div class="settings-item">
                  <!-- 下拉框容器：flex-grow 占满左侧空间，内部左对齐 -->
@@ -263,7 +263,7 @@
         </div>
 
         <!-- 后台活动 API 设置 -->
-        <div class="settings-header" data-lang-key="apiBackgroundSettings">后台活动 API 设置</div>
+        <div class="settings-header" data-api-category="ai" data-lang-key="apiBackgroundSettings">后台活动 API 设置</div>
         <div class="settings-section">
             <div class="settings-tip-wrapper">
                 <div class="settings-tip-content">
@@ -298,7 +298,7 @@
         </div>
 
         <!-- 识图 API 设置 -->
-        <div class="settings-header" data-lang-key="apiVisionSettings">识图 API 设置</div>
+        <div class="settings-header" data-api-category="ai" data-lang-key="apiVisionSettings">识图 API 设置</div>
         <div class="settings-section">
             <div class="settings-tip-wrapper">
                 <div class="settings-tip-content">
@@ -333,7 +333,7 @@
         </div>
 
         <!-- 情侣空间 API 设置 -->
-        <div class="settings-header" data-lang-key="apiCoupleSpaceSettings">情侣空间 API 设置</div>
+        <div class="settings-header" data-api-category="ai" data-lang-key="apiCoupleSpaceSettings">情侣空间 API 设置</div>
         <div class="settings-section">
             <div class="settings-tip-wrapper">
                 <div class="settings-tip-content">
@@ -368,7 +368,7 @@
         </div>
 
         <!-- 识图Token优化 -->
-        <div class="settings-header">识图优化</div>
+        <div class="settings-header" data-api-category="ai">识图优化</div>
         <div class="settings-section">
             <div class="settings-item">
                 <label>识图Token优化</label>
@@ -383,7 +383,7 @@
         </div>
 
         <!-- 后台与自动化 -->
-        <div class="settings-header" data-lang-key="apiBgActivitySettings">后台活动</div>
+        <div class="settings-header" data-api-category="ai" data-lang-key="apiBgActivitySettings">后台活动</div>
         <div class="settings-section">
             <div class="settings-item">
                 <label>启用后台角色活动</label>
@@ -421,7 +421,7 @@
         <div class="settings-desc">开启后台活动会增加 API 费用。后台查看手机：留空概率时AI自主决定，填写0-100则按概率触发。</div>
 
         <!-- 语音设置 -->
-        <div class="settings-header" data-lang-key="apiTtsSettings">Minimax TTS 语音</div>
+        <div class="settings-header" data-api-category="service" data-lang-key="apiTtsSettings">Minimax TTS 语音</div>
         <div class="settings-section">
             <div class="settings-item">
                 <label>Group ID</label>
@@ -457,7 +457,7 @@
         </div>
 
         <!-- 生图设置 (AI & NovelAI) -->
-        <div class="settings-header" data-lang-key="apiImageGenSettings">图像生成</div>
+        <div class="settings-header" data-api-category="service" data-lang-key="apiImageGenSettings">图像生成</div>
         <div class="settings-section">
             <!-- 通用生图 -->
             <div class="settings-item">

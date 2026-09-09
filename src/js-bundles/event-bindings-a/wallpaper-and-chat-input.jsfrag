@@ -253,7 +253,16 @@
     });
 
 
-    document.getElementById('save-api-settings-btn').addEventListener('click', async () => {
+    const saveApiSettingsButton = document.getElementById('save-api-settings-btn');
+    saveApiSettingsButton.addEventListener('click', async () => {
+      if (saveApiSettingsButton.dataset.saving === 'true') return;
+      const originalSaveText = saveApiSettingsButton.textContent;
+      saveApiSettingsButton.dataset.saving = 'true';
+      saveApiSettingsButton.classList.add('is-saving');
+      saveApiSettingsButton.setAttribute('aria-disabled', 'true');
+      saveApiSettingsButton.textContent = '保存中…';
+
+      try {
 
       state.apiConfig.proxyUrl = document.getElementById('proxy-url').value.trim();
       state.apiConfig.apiKey = document.getElementById('api-key').value.trim();
@@ -474,7 +483,20 @@
       // 保存 GPT 生图配置到 localStorage
       saveOpenAIImageSettings();
 
-      alert('所有API与后台设置已保存!');
+        alert('所有API与后台设置已保存!');
+        const apiSettingsScreen = document.getElementById('api-settings-screen');
+        if (apiSettingsScreen) {
+          apiSettingsScreen.dispatchEvent(new CustomEvent('api-settings-save-success'));
+        }
+      } catch (error) {
+        console.error('保存 API 设置失败:', error);
+        alert('保存失败，请检查后重试。');
+      } finally {
+        saveApiSettingsButton.dataset.saving = 'false';
+        saveApiSettingsButton.classList.remove('is-saving');
+        saveApiSettingsButton.removeAttribute('aria-disabled');
+        saveApiSettingsButton.textContent = originalSaveText;
+      }
     });
 
 
