@@ -33,7 +33,7 @@
         doubanPosts,
         stickerCategories,
 
-        appearancePresets,
+        appearancePresets, customWidgetPackages, customWidgetInstances,
 
         presets,
         presetCategories,
@@ -87,7 +87,7 @@
         db.doubanPosts.toArray(),
         db.stickerCategories.toArray(),
 
-        db.appearancePresets.toArray(),
+        db.appearancePresets.toArray(), db.customWidgetPackages.toArray(), db.customWidgetInstances.toArray(),
 
         db.presets.toArray(),
         db.presetCategories.toArray(),
@@ -150,7 +150,7 @@
         doubanPosts,
         stickerCategories,
 
-        appearancePresets,
+        appearancePresets, customWidgetPackages, customWidgetInstances,
 
         presets,
         presetCategories,
@@ -279,6 +279,8 @@
         doubanPosts: '豆瓣帖子',
         stickerCategories: '表情包分类',
         appearancePresets: '外观预设',
+        customWidgetPackages: '自制小组件',
+        customWidgetInstances: '小组件个人内容',
         presets: '预设',
         presetCategories: '预设分类',
         npcs: 'NPC',
@@ -597,6 +599,8 @@
       'soundPresets': '声音预设',
       'renderingRules': '渲染规则',
       'appearancePresets': '外观预设',
+      'customWidgetPackages': '自制小组件',
+      'customWidgetInstances': '小组件个人内容',
       'npcs': 'NPCs',
       'npcGroups': 'NPC分组',
       'doubanPosts': '豆瓣动态',
@@ -761,6 +765,8 @@
       'soundPresets': '声音预设',
       'renderingRules': '渲染规则',
       'appearancePresets': '外观预设',
+      'customWidgetPackages': '自制小组件',
+      'customWidgetInstances': '小组件个人内容',
       'npcs': 'NPCs',
       'npcGroups': 'NPC分组',
       'doubanPosts': '豆瓣动态',
@@ -977,6 +983,8 @@
         if (Array.isArray(backupData.doubanPosts)) await db.doubanPosts.bulkPut(backupData.doubanPosts);
         if (Array.isArray(backupData.stickerCategories)) await db.stickerCategories.bulkPut(backupData.stickerCategories);
         if (Array.isArray(backupData.appearancePresets)) await db.appearancePresets.bulkPut(backupData.appearancePresets);
+        if (Array.isArray(backupData.customWidgetPackages)) await db.customWidgetPackages.bulkPut(backupData.customWidgetPackages);
+        if (Array.isArray(backupData.customWidgetInstances)) await db.customWidgetInstances.bulkPut(backupData.customWidgetInstances);
         if (Array.isArray(backupData.presets)) await db.presets.bulkPut(backupData.presets);
         if (Array.isArray(backupData.presetCategories)) await db.presetCategories.bulkPut(backupData.presetCategories);
         if (Array.isArray(backupData.npcs)) await db.npcs.bulkPut(backupData.npcs);

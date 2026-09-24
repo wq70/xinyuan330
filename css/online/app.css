@@ -294,6 +294,190 @@
     padding: 0 0 20px 0;
 }
 
+.online-identity-tools {
+    padding: 5px 16px 9px;
+    border-bottom: 0.5px solid var(--border-color, #eee);
+    background: var(--bg-primary, #fff);
+}
+.online-id-hint {
+    width: 100%;
+    margin-top: 4px;
+    color: var(--text-secondary, #888);
+    font-size: 11px;
+    line-height: 1.4;
+}
+.online-id-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 6px;
+}
+.online-id-actions .settings-mini-btn {
+    width: auto;
+    padding: 5px 8px;
+    font-size: 11px;
+}
+@media (max-width: 375px) {
+    .online-identity-tools { padding-left: 12px; padding-right: 12px; }
+}
+.online-role-actions,
+.online-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding: 7px 0;
+    font-size: 13px;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+.online-role-actions > span:first-child,
+.online-setting-row > span:first-child {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.online-setting-row > .toggle-switch {
+    flex: 0 0 auto;
+}
+.online-role-actions button {
+    flex-shrink: 0;
+    padding: 5px 7px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    background: var(--bg-secondary, #f5f5f5);
+    color: var(--text-primary, #333);
+    font-size: 11px;
+    cursor: pointer;
+}
+.online-setting-row input[type="number"],
+.online-setting-row input[type="text"] {
+    width: 90px;
+    min-width: 0;
+    padding: 5px 6px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    background: var(--bg-primary, #fff);
+    color: var(--text-primary, #333);
+    font-size: 12px;
+}
+.online-setting-row input[type="checkbox"] {
+    accent-color: #007aff;
+}
+.online-setting-column {
+    align-items: stretch;
+    flex-direction: column;
+}
+.online-setting-column textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 7px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 7px;
+    background: var(--bg-primary, #fff);
+    color: var(--text-primary, #333);
+    font: inherit;
+    resize: vertical;
+}
+.online-role-settings-content {
+    max-height: min(78vh, 680px);
+}
+.online-role-settings-content .modal-body {
+    overflow-y: auto;
+}
+.online-member-action {
+    flex-shrink: 0;
+    padding: 5px 8px;
+    border: 1px solid var(--border-color, #ddd);
+    border-radius: 6px;
+    background: var(--bg-secondary, #f5f5f5);
+    color: #d43b3b;
+    font-size: 11px;
+    cursor: pointer;
+}
+.online-group-announcement {
+    margin: 6px 0 12px;
+    padding: 8px 10px;
+    border-radius: 7px;
+    background: var(--bg-secondary, #f5f5f5);
+    color: var(--text-secondary, #666);
+    font-size: 12px;
+    white-space: pre-wrap;
+}
+.online-invite-list {
+    overflow-y: auto;
+}
+.online-invite-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+    padding: 9px 3px;
+    border: 0;
+    border-bottom: 1px solid var(--border-color, #eee);
+    background: transparent;
+    color: var(--text-primary, #333);
+    text-align: left;
+    font-size: 13px;
+    cursor: pointer;
+}
+.online-invite-item img {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.online-invite-item span {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.online-invite-item small {
+    max-width: 35%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-secondary, #888);
+}
+.online-legacy-list {
+    overflow-y: auto;
+    font-size: 12px;
+}
+.online-legacy-list details {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color, #eee);
+}
+.online-legacy-list summary {
+    cursor: pointer;
+    font-weight: 600;
+    list-style: none;
+}
+.online-legacy-list summary::before {
+    content: '›';
+    display: inline-block;
+    margin-right: 6px;
+    color: #007aff;
+}
+.online-legacy-list details[open] summary::before {
+    transform: rotate(90deg);
+}
+.online-legacy-message {
+    padding: 5px 8px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+@media (max-width: 375px) {
+    .online-role-actions { gap: 4px; }
+    .online-role-actions button { padding: 4px 5px; }
+    .online-setting-row input[type="text"] { width: 76px; }
+}
+
 /* 联机表情面板 */
 #online-sticker-panel {
     border-top: 1px solid var(--border-color, #eee);

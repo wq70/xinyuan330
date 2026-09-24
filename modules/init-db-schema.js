@@ -144,4 +144,10 @@ db.version(62).stores({
   focusEvents: '++id, sessionId, type, timestamp'
 });
 
+// 用户自制小组件：定义与每次放置填写的私有内容分开保存。
+db.version(63).stores({
+  customWidgetPackages: '&id, name, updatedAt',
+  customWidgetInstances: '&id, packageId, updatedAt'
+});
+
 window.db = db;

@@ -526,7 +526,7 @@
                 <p>本部署教程主要通过人工智能技术生成，仅供参考学习使用。教程内容可能存在不准确或过时的信息，请用户在实际操作时谨慎判断。</p>
                 
                 <h4>2. 隐私保护声明</h4>
-                <p>本联机功能不涉及任何商业行为。作者及开发者<strong>不会获取、存储或使用任何用户的个人隐私信息</strong>。所有通信数据仅在用户设备与用户自行部署的服务器之间传输。</p>
+                <p>联机身份、好友、群和消息会保存在用户选择的联机服务器上，以便离线后同步。服务器管理员和托管平台可能接触这些数据；请使用可信服务器，不要在聊天中发送敏感信息。角色的 API Key 和私人长期记忆不会作为群消息上传到联机服务器。</p>
                 
                 <h4>3. 服务器安全提醒</h4>
                 <p>用户在选择和使用第三方服务器平台时，<strong>请务必注意保护自己的隐私和数据安全</strong>。建议：</p>
@@ -566,7 +566,7 @@
             <p style="margin: 10px 0; line-height: 1.8;">本部署教程主要通过人工智能技术生成，仅供参考学习使用。教程内容可能存在不准确或过时的信息，请用户在实际操作时谨慎判断。</p>
             
             <p style="margin: 10px 0; line-height: 1.8;"><strong>2. 隐私保护声明</strong></p>
-            <p style="margin: 10px 0; line-height: 1.8;">本联机功能不涉及任何商业行为。作者及开发者<strong>不会获取、存储或使用任何用户的个人隐私信息</strong>。所有通信数据仅在用户设备与用户自行部署的服务器之间传输。</p>
+            <p style="margin: 10px 0; line-height: 1.8;">联机身份、好友、群和消息会保存在用户选择的联机服务器上，以便离线后同步。服务器管理员和托管平台可能接触这些数据；请使用可信服务器，不要在聊天中发送敏感信息。角色的 API Key 和私人长期记忆不会作为群消息上传到联机服务器。</p>
             
             <p style="margin: 10px 0; line-height: 1.8;"><strong>3. 服务器安全提醒</strong></p>
             <p style="margin: 10px 0; line-height: 1.8;">用户在选择和使用第三方服务器平台时，<strong>请务必注意保护自己的隐私和数据安全</strong>。建议：</p>
@@ -586,6 +586,7 @@
         <div class="intro-box">
             <strong style="font-size: 18px; color: white;">写给零基础的朋友</strong><br><br>
             这份教程会一步一步教你如何搭建联机服务器<br>
+            联机服务器会把身份凭据摘要、好友、群和消息保存在运行账户的 <span class="code-line">.ephone-online</span> 目录。部署前请确认平台提供持久磁盘；如果文件会在重启后清空，请设置 <span class="code-line">ONLINE_DATA_DIR</span> 指向持久目录并定期备份。旧的自填 ID 不能直接用于新身份。
             就像做菜一样，跟着步骤走，保证成功！<br>
             <strong style="color: white;">预计时间：10-20分钟</strong>
         </div>
@@ -841,6 +842,7 @@
                     <p>把服务器代码上传到 GitHub，确保代码仓库包含：</p>
                     <ul>
                         <li><span class="code-line">server.js</span> - 服务器主文件</li>
+                        <li><span class="code-line">online-service.js</span> - 联机身份、群聊和消息服务</li>
                         <li><span class="code-line">package.json</span> - 依赖配置文件</li>
                     </ul>
                     <div class="tips-box">
@@ -1040,7 +1042,7 @@ server.listen(PORT, () => {
                     
                     <div class="tips-box">
                         <h4>💡 方案B：如果没有现成模板</h4>
-                        <p>如果找不到模板，需要先把<strong>服务器代码文件（server.js 和 package.json）</strong>上传到 GitHub。服务器代码文件就在聊天程序的根目录里，找到后上传即可。</p>
+                        <p>如果找不到模板，需要先把<strong>服务器代码文件（server.js、online-service.js 和 package.json）</strong>上传到 GitHub。服务器代码文件就在聊天程序的根目录里，找到后上传即可。</p>
                         <p>创建步骤：</p>
                         <ol>
                             <li>在 GitHub 点击右上角的 <span class="button-example">+</span> → <span class="button-example">New repository</span></li>
@@ -1263,6 +1265,7 @@ server.listen(PORT, () => {
                     <p>把服务器代码上传到 GitHub，方法同前面教程。确保代码仓库包含：</p>
                     <ul>
                         <li><span class="code-line">server.js</span> - 服务器主文件</li>
+                        <li><span class="code-line">online-service.js</span> - 联机身份、群聊和消息服务</li>
                         <li><span class="code-line">package.json</span> - 依赖配置文件</li>
                     </ul>
                 </div>
@@ -1433,7 +1436,7 @@ server.listen(PORT, () => {
                         <ol>
                             <li>选择 <span class="button-example">glitch-hello-node</span> 模板</li>
                             <li>删除模板文件</li>
-                            <li>把你的 <span class="code-line">server.js</span> 和 <span class="code-line">package.json</span> 复制粘贴进去</li>
+                            <li>把你的 <span class="code-line">server.js</span>、<span class="code-line">online-service.js</span> 和 <span class="code-line">package.json</span> 复制粘贴进去</li>
                         </ol>
                     </div>
                 </div>
