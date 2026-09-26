@@ -82,7 +82,7 @@
       const favBtn = document.getElementById('favorite-memo-btn');
 
       if (titleEl) titleEl.textContent = memo.title;
-      if (contentEl) contentEl.value = memo.content;
+      if (contentEl) contentEl.value = typeof memo.content === 'string' ? memo.content : (typeof memo.content?.content === 'string' ? memo.content.content : '');
 
 
       const existingFavorite = await db.favorites.where({
@@ -99,11 +99,21 @@
   }
 
 
-  function renderCharMemoList() {
+  async function renderCharMemoList() {
     const listEl = document.getElementById('char-memo-list');
     listEl.innerHTML = '';
     const char = state.chats[activeCharacterId];
-    const memos = (char.memos || []).slice().reverse();
+    const storedMemos = char.memos || [];
+    let repaired = false;
+    storedMemos.forEach(memo => {
+      const nested = memo?.content;
+      if (nested && typeof nested.title === 'string' && typeof nested.content === 'string' && memo.title == null) {
+        memo.title = nested.title;
+        memo.content = nested.content;
+        repaired = true;
+      }
+    });
+    const memos = storedMemos.slice().reverse();
 
     if (memos.length === 0) {
       listEl.innerHTML = '<p style="text-align:center; color: var(--text-secondary); padding: 50px 0;">还没有备忘录。</p>';
@@ -121,7 +131,7 @@
       item.className = 'memo-item';
 
       // 获取内容预览 (第一行)
-      const previewText = (memo.content || '').split('\n')[0] || '无内容';
+      const previewText = (typeof memo.content === 'string' ? memo.content : '').split('\n')[0] || '无内容';
 
       item.innerHTML = `
             <div class="cphone-item-icon-box memo-icon-style">
@@ -140,6 +150,14 @@
       addLongPressListener(item, () => deleteMemo(memo.id));
       listEl.appendChild(item);
     });
+
+    if (repaired) {
+      try {
+        await db.chats.put(char);
+      } catch (error) {
+        console.error('修复角色备忘录数据失败:', error);
+      }
+    }
   }
 
 
@@ -161,20 +179,22 @@
     }
   }
 
-  // saveMemo 旧版（接受 memoData 对象）已删除，保留支持编辑的新版
-
-  async function saveMemo(content) {
+  async function saveMemo(memoData) {
     const char = state.chats[activeCharacterId];
     if (!char.memos) char.memos = [];
+    const isMemoObject = memoData !== null && typeof memoData === 'object';
+    const content = isMemoObject ? memoData.content : memoData;
 
     if (editingMemoId) {
       const memo = char.memos.find(m => m.id === editingMemoId);
       if (memo) memo.content = content;
     } else {
-      char.memos.push({
+      const memo = {
         id: Date.now(),
         content: content
-      });
+      };
+      if (isMemoObject) memo.title = memoData.title;
+      char.memos.push(memo);
     }
 
     await db.chats.put(char);

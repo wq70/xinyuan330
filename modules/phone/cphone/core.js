@@ -407,7 +407,7 @@
         switchToCharScreen('char-taobao-screen');
         break;
       case 'memo':
-        renderCharMemoList();
+        await renderCharMemoList();
         switchToCharScreen('char-memo-screen');
         break;
       case 'diary':
